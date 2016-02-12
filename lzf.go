@@ -1,3 +1,4 @@
+// Package lzf implements compression using LibLZF.
 package lzf
 
 // #cgo CFLAGS: -O3 -DHLOG=14
