@@ -40,7 +40,7 @@
 # define SET_ERRNO(n)
 #else
 # include <errno.h>
-# define SET_ERRNO(n) errno = (n)
+# define SET_ERRNO(n) *err = (n)
 #endif
 
 #if USE_REP_MOVSB /* small win on amd, big loss on intel */
@@ -54,7 +54,8 @@
 
 unsigned int 
 lzf_decompress (const void *const in_data,  unsigned int in_len,
-                void             *out_data, unsigned int out_len)
+                void             *out_data, unsigned int out_len,
+                int *err)
 {
   u8 const *ip = (const u8 *)in_data;
   u8       *op = (u8 *)out_data;
