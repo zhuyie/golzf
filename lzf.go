@@ -11,6 +11,12 @@ import (
 	"unsafe"
 )
 
+var (
+	ErrInsufficientBuffer = errors.New("insufficient output buffer")
+	ErrDataCorruption     = errors.New("invalid compressed data")
+	ErrUnknown            = errors.New("unknown error")
+)
+
 func p(in []byte) unsafe.Pointer {
 	if len(in) == 0 {
 		return unsafe.Pointer(nil)
@@ -34,7 +40,7 @@ func CompressBound(input []byte) int {
 func Compress(input, output []byte) (outSize uint, err error) {
 	outSize = uint(C.lzf_compress(p(input), clen(input), p(output), clen(output)))
 	if outSize == 0 {
-		err = errors.New("insufficient space for compression")
+		err = ErrInsufficientBuffer
 	}
 	return
 }
@@ -50,11 +56,11 @@ func Decompress(input, output []byte) (outSize uint, err error) {
 	}
 	switch errCode {
 	case C.E2BIG:
-		err = errors.New("insufficient space for decompression")
+		err = ErrInsufficientBuffer
 	case C.EINVAL:
-		err = errors.New("invalid compressed data")
+		err = ErrDataCorruption
 	default:
-		err = errors.New("unknown error")
+		err = ErrUnknown
 	}
 	return
 }
