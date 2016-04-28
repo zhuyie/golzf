@@ -11,6 +11,7 @@ import (
 	"unsafe"
 )
 
+// error codes
 var (
 	ErrInsufficientBuffer = errors.New("insufficient output buffer")
 	ErrDataCorruption     = errors.New("invalid compressed data")
@@ -49,7 +50,7 @@ func Compress(input, output []byte) (outSize uint, err error) {
 // len(output) should have enough space for the uncompressed data.
 // Returns the number of bytes in the `output` slice.
 func Decompress(input, output []byte) (outSize uint, err error) {
-	var errCode C.int = 0
+	var errCode C.int
 	outSize = uint(C.lzf_decompress(p(input), clen(input), p(output), clen(output), &errCode))
 	if outSize > 0 {
 		return
