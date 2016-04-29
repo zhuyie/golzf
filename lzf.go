@@ -11,12 +11,6 @@ const (
 	maxRef          = (1 << 8) + (1 << 3)
 )
 
-// CompressBound calculates the size of the output buffer needed by Compress.
-func CompressBound(input []byte) int {
-	// should less than 104% of the original size
-	return int(float64(len(input))*1.04) + 1
-}
-
 // Compress compresses `input` and puts the content in `output`.
 // len(output) should have enough space for the compressed data.
 // Returns the number of bytes in the `output` slice.

@@ -7,7 +7,7 @@ import (
 
 func TestCompression(t *testing.T) {
 	input := []byte(strings.Repeat("Hello world, this is quite something", 10))
-	output := make([]byte, CompressBound(input))
+	output := make([]byte, len(input)-1)
 	outSize, err := Compress(input, output)
 	if err != nil {
 		t.Fatalf("Compress failed: %v", err)
@@ -32,7 +32,7 @@ func TestCompression(t *testing.T) {
 
 func TestNoCompression(t *testing.T) {
 	input := []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	output := make([]byte, CompressBound(input))
+	output := make([]byte, len(input)+32)
 	outSize, err := Compress(input, output)
 	if err != nil {
 		t.Fatalf("Compress failed: %v", err)
@@ -66,7 +66,7 @@ func TestCompressionError(t *testing.T) {
 
 func TestDecompressionError(t *testing.T) {
 	input := []byte(strings.Repeat("Hello world, this is quite something", 10))
-	output := make([]byte, CompressBound(input))
+	output := make([]byte, len(input)-1)
 	outSize, err := Compress(input, output)
 	if err != nil {
 		t.Fatalf("Compress failed: %v", err)
