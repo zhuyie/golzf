@@ -9,6 +9,9 @@ const (
 	maxLit          = 1 << 5
 	maxOff          = 1 << 13
 	maxRef          = (1 << 8) + (1 << 3)
+
+	// HashTableSize is the size of hashtable
+	HashTableSize = htabSize
 )
 
 // Compress compresses `input` and puts the content in `output`.
