@@ -94,3 +94,27 @@ func TestDecompressionError(t *testing.T) {
 		t.Fatalf("Decompress failed: %v", err)
 	}
 }
+
+func BenchmarkCompress(b *testing.B) {
+	input := []byte(strings.Repeat("Hello world, this is quite something", 5))
+	output := make([]byte, len(input)-1)
+
+	var outSize int
+	var err error
+	for n := 0; n < b.N; n++ {
+		outSize, err = Compress(input, output)
+		if err != nil {
+			b.Fatalf("Compress failed: %v", err)
+		}
+	}
+	output = output[:outSize]
+
+	decompressed := make([]byte, len(input))
+	outSize, err = Decompress(output, decompressed)
+	if err != nil {
+		b.Fatalf("Decompress failed: %v", err)
+	}
+	if string(decompressed) != string(input) {
+		b.Fatalf("Decompress failed: decompressed != input: %q != %q", decompressed, input)
+	}
+}
