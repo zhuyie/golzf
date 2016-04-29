@@ -1,4 +1,6 @@
-// Package lzf implements compression using LibLZF.
+// +build lzf_cgo
+
+// Package lzf implements LZF compression algorithm.
 package lzf
 
 // #cgo CFLAGS: -O3 -DHLOG=14
@@ -6,17 +8,7 @@ package lzf
 // #include "src/lzf_d.c"
 import "C"
 
-import (
-	"errors"
-	"unsafe"
-)
-
-// error codes
-var (
-	ErrInsufficientBuffer = errors.New("insufficient output buffer")
-	ErrDataCorruption     = errors.New("invalid compressed data")
-	ErrUnknown            = errors.New("unknown error")
-)
+import "unsafe"
 
 func p(in []byte) unsafe.Pointer {
 	if len(in) == 0 {
@@ -38,8 +30,8 @@ func CompressBound(input []byte) int {
 // Compress compresses `input` and puts the content in `output`.
 // len(output) should have enough space for the compressed data.
 // Returns the number of bytes in the `output` slice.
-func Compress(input, output []byte) (outSize uint, err error) {
-	outSize = uint(C.lzf_compress(p(input), clen(input), p(output), clen(output)))
+func Compress(input, output []byte) (outSize int, err error) {
+	outSize = int(C.lzf_compress(p(input), clen(input), p(output), clen(output)))
 	if outSize == 0 {
 		err = ErrInsufficientBuffer
 	}
@@ -49,9 +41,9 @@ func Compress(input, output []byte) (outSize uint, err error) {
 // Decompress decompresses `input` and puts the content in `output`.
 // len(output) should have enough space for the uncompressed data.
 // Returns the number of bytes in the `output` slice.
-func Decompress(input, output []byte) (outSize uint, err error) {
+func Decompress(input, output []byte) (outSize int, err error) {
 	var errCode C.int
-	outSize = uint(C.lzf_decompress(p(input), clen(input), p(output), clen(output), &errCode))
+	outSize = int(C.lzf_decompress(p(input), clen(input), p(output), clen(output), &errCode))
 	if outSize > 0 {
 		return
 	}
