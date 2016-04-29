@@ -15,6 +15,13 @@ const (
 // len(output) should have enough space for the compressed data.
 // Returns the number of bytes in the `output` slice.
 func Compress(input, output []byte) (int, error) {
+	return CompressFast(input, output, nil)
+}
+
+// CompressFast compresses `input` and puts the content in `output`.
+// len(output) should have enough space for the compressed data.
+// Returns the number of bytes in the `output` slice.
+func CompressFast(input, output []byte, htab []uint32) (int, error) {
 
 	var hval, ref, hslot, off uint32
 	var inputIndex, outputIndex, lit int
@@ -28,7 +35,14 @@ func Compress(input, output []byte) (int, error) {
 		return 0, ErrInsufficientBuffer
 	}
 
-	htab := make([]uint32, htabSize)
+	if htab == nil {
+		htab = make([]uint32, htabSize)
+	} else {
+		/* turn on the following memset will make compression deterministic and SLOWER */
+		//for i := range htab {
+		//	htab[i] = 0
+		//}
+	}
 
 	lit = 0 /* start run */
 	outputIndex++
