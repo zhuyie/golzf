@@ -16,8 +16,8 @@ const (
 // Returns the number of bytes in the `output` slice.
 func Compress(input, output []byte) (int, error) {
 
-	var hval, ref, hslot uint32
-	var inputIndex, outputIndex, lit, off int
+	var hval, ref, hslot, off uint32
+	var inputIndex, outputIndex, lit int
 
 	inputLength := len(input)
 	if inputLength == 0 {
@@ -39,9 +39,9 @@ func Compress(input, output []byte) (int, error) {
 		hslot = ((hval >> (3*8 - htabLog)) - hval*5) & (htabSize - 1)
 		ref = htab[hslot]
 		htab[hslot] = uint32(inputIndex)
-		off = inputIndex - int(ref) - 1
+		off = uint32(inputIndex) - ref - 1
 
-		if off < int(maxOff) &&
+		if off < maxOff &&
 			(ref > 0) &&
 			(input[ref] == input[inputIndex]) &&
 			(input[ref+1] == input[inputIndex+1]) &&
@@ -80,7 +80,7 @@ func Compress(input, output []byte) (int, error) {
 			inputIndex++
 
 			if len < 7 {
-				output[outputIndex] = byte((off >> 8) + (len << 5))
+				output[outputIndex] = byte((off >> 8) + uint32(len<<5))
 				outputIndex++
 			} else {
 				output[outputIndex] = byte((off >> 8) + (7 << 5))
